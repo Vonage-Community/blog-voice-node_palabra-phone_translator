@@ -63,6 +63,15 @@ function connectToWebSocket(uri) {
   };
 }
 
+// The caller hears this before the other phone rings, so it's in the caller's language.
+// Add a line here for other languages; anything missing falls back to English.
+const GREETINGS = {
+  en: { text: 'Please wait while we connect your call.', language: 'en-US' },
+  es: { text: 'Por favor, espere mientras conectamos su llamada.', language: 'es-ES' },
+  he: { text: 'אנא המתינו, אנו מחברים את השיחה.', language: 'he-IL' },
+};
+const greeting = GREETINGS[CALLER_LANGUAGE] ?? GREETINGS.en;
+
 app.get('/webhooks/answer', async (req, res) => {
   const callId = req.query.uuid;
   console.log(`Call ${callId}: incoming from ${req.query.from}, dialing the destination`);
@@ -77,7 +86,7 @@ app.get('/webhooks/answer', async (req, res) => {
   callIdByLeg.set(callId, callId);
 
   res.json([
-    { action: 'talk', text: 'Please wait while we connect your call.' },
+    { action: 'talk', text: greeting.text, language: greeting.language },
     connectToWebSocket(socketUrl(req, 'caller', callId)),
   ]);
 
