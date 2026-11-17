@@ -1,0 +1,22 @@
+audio.js
+  s_cb9cba7a9de31d::t_decbf98a50c31f 46-65
+server.js
+  s_cb9cba7a9de31d::t_0772a1383665e0 68,118,126
+  s_cb9cba7a9de31d::t_07efd7774b8a5e 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ec7c07794c81fdd73f22f2201a47928c226c347e",
+  "prompts": {},
+  "sessions": {
+    "s_cb9cba7a9de31d": {
+      "agent_id": {
+        "tool": "kiro",
+        "id": "sess_c7201f5a-852b-40a3-a9a0-fd8128f3184a",
+        "model": "auto"
+      },
+      "human_author": "Benjamin Aronov <benjamin@benyas.com>"
+    }
+  }
+}
