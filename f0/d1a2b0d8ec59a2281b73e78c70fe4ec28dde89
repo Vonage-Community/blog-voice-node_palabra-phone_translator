@@ -1,0 +1,32 @@
+server.js
+  s_cb9cba7a9de31d::t_40c0a4ad034896 32-33
+  s_cb9cba7a9de31d::t_3b248736024a9a 29-31
+  s_cb9cba7a9de31d::t_e06a21afa79bca 34-36
+README.md
+  s_cb9cba7a9de31d::t_57d3c44adf4142 1-25,27-40,42-139
+  s_cb9cba7a9de31d::t_e20362a6d0d24d 41
+  s_cb9cba7a9de31d::t_a06f1a800cf97a 26
+palabra.js
+  s_cb9cba7a9de31d::t_ac91c4a4ebe486 29-32
+  s_cb9cba7a9de31d::t_12bddbd62e402c 37-45,74
+  s_cb9cba7a9de31d::t_b86a4af29dec9c 26-28
+  s_cb9cba7a9de31d::t_86512b22117861 33-36
+  s_cb9cba7a9de31d::t_d4b3a4dcc44f2e 46-48,71-73
+  s_cb9cba7a9de31d::t_b3e1cfb4243fb5 75-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f0d1a2b0d8ec59a2281b73e78c70fe4ec28dde89",
+  "prompts": {},
+  "sessions": {
+    "s_cb9cba7a9de31d": {
+      "agent_id": {
+        "tool": "kiro",
+        "id": "sess_c7201f5a-852b-40a3-a9a0-fd8128f3184a",
+        "model": "auto"
+      },
+      "human_author": "Benjamin Aronov <benjamin@benyas.com>"
+    }
+  }
+}
