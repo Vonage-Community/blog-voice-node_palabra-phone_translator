@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import express from 'express';
 import WebSocket, { WebSocketServer } from 'ws';
 import { Vonage } from '@vonage/server-sdk';
-import { Chunker, FRAME_BYTES, mixFrames } from './audio.js';
+import { Chunker, FRAME_BYTES, mixFrames, ringbackFrame } from './audio.js';
 import { PalabraStream } from './palabra.js';
 
 const required = ['VONAGE_APPLICATION_ID', 'VONAGE_PRIVATE_KEY_PATH', 'VONAGE_NUMBER',
@@ -45,6 +45,7 @@ function createLeg(language) {
     // Palabra's audio chunks can be any length, so translated speech is re-cut into 20 ms frames.
     translatedChunker: new Chunker(FRAME_BYTES),
     translatedFrames: [], // translated speech waiting to be played to this person
+    ringbackFrameNumber: 0,
   };
 }
 
@@ -64,6 +65,7 @@ function connectToWebSocket(uri) {
 
 app.get('/webhooks/answer', async (req, res) => {
   const callId = req.query.uuid;
+  console.log(`Call ${callId}: incoming from ${req.query.from}, dialing the destination`);
   const call = {
     id: callId,
     caller: createLeg(CALLER_LANGUAGE),
@@ -113,6 +115,7 @@ wss.on('connection', (socket, req) => {
   const [, prefix, role, callId] = new URL(req.url, 'http://localhost').pathname.split('/');
   const call = calls.get(callId);
   if (prefix !== 'ws' || !call || !['caller', 'destination'].includes(role)) {
+    console.warn(`Rejected WebSocket for ${req.url}`);
     socket.close();
     return;
   }
@@ -120,6 +123,7 @@ wss.on('connection', (socket, req) => {
   const leg = call[role];
   const otherLeg = role === 'caller' ? call.destination : call.caller;
   leg.socket = socket;
+  console.log(`Call ${callId}: ${role} audio connected`);
 
   socket.on('message', (data, isBinary) => {
     // The first message is a JSON text event; everything after it is audio.
@@ -127,6 +131,12 @@ wss.on('connection', (socket, req) => {
 
     for (const frame of leg.chunker.push(data)) {
       leg.palabra?.sendAudio(frame);
+
+      // Until the other phone answers, the caller hears a ringback tone instead of silence.
+      if (role === 'caller' && !otherLeg.socket) {
+        socket.send(ringbackFrame(leg.ringbackFrameNumber++));
+        continue;
+      }
 
       // This leg's audio arrives every 20 ms, so it also sets the pace for the other leg:
       // the next frame of translated speech, with this speaker's own voice quietly underneath.

@@ -43,3 +43,23 @@ export function mixFrames(translated, original, originalGain) {
   }
   return out;
 }
+
+// The US ringback tone: 440 Hz and 480 Hz together, 2 seconds on and 4 seconds off.
+// Played to the caller while the other phone rings, so the wait doesn't sound like a dead line.
+const RINGBACK_CYCLE_FRAMES = 300; // 6 seconds of 20 ms frames
+const RINGBACK_ON_FRAMES = 100; // the first 2 seconds of each cycle
+const RINGBACK_AMPLITUDE = 3_000; // per tone, well below full scale
+
+export function ringbackFrame(frameNumber) {
+  const frame = Buffer.alloc(FRAME_BYTES);
+  if (frameNumber % RINGBACK_CYCLE_FRAMES >= RINGBACK_ON_FRAMES) return frame;
+
+  const samplesPerFrame = FRAME_BYTES / 2;
+  for (let i = 0; i < samplesPerFrame; i++) {
+    const t = (frameNumber * samplesPerFrame + i) / SAMPLE_RATE;
+    const sample = RINGBACK_AMPLITUDE
+      * (Math.sin(2 * Math.PI * 440 * t) + Math.sin(2 * Math.PI * 480 * t));
+    frame.writeInt16LE(Math.round(sample), i * 2);
+  }
+  return frame;
+}
