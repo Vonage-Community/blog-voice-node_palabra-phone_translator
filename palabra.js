@@ -8,8 +8,9 @@ const MIN_FLUSH_BYTES = 768;
 
 // One Palabra speech-to-speech stream, translating a single caller in one direction.
 export class PalabraStream {
-  constructor({ apiKey, sourceLanguage, targetLanguage, onAudio, label }) {
-    this.apiKey = apiKey;
+  constructor({ clientId, clientSecret, sourceLanguage, targetLanguage, onAudio, label }) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
     this.sourceLanguage = sourceLanguage;
     this.targetLanguage = targetLanguage;
     this.onAudio = onAudio;
@@ -22,8 +23,11 @@ export class PalabraStream {
   start() {
     // The random path segment lets Palabra spread connections across its servers.
     const url = `wss://streaming.palabra.ai/streaming-api/${randomUUID()}`
-      + `/v1/speech-to-speech/stream?token=${encodeURIComponent(this.apiKey)}`;
-    this.ws = new WebSocket(url);
+      + '/v1/speech-to-speech/stream';
+    // Credentials go in headers rather than the URL, so they never show up in logs.
+    this.ws = new WebSocket(url, {
+      headers: { ClientID: this.clientId, ClientSecret: this.clientSecret },
+    });
 
     return new Promise((resolve, reject) => {
       const timer = setTimeout(

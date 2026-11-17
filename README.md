@@ -20,7 +20,7 @@ Read the blog post: _coming soon_
 
 - [Node.js](https://nodejs.org) 22 or newer
 - [Vonage CLI](https://github.com/Vonage/vonage-cli) 3.3.1 or newer: `npm install -g @vonage/cli`
-- A [Palabra AI](https://app.palabra.ai) account and API key
+- A [Palabra AI](https://app.palabra.ai) account and an API key. Creating a key gives you a Client ID and a Client Secret.
 - An [ngrok](https://ngrok.com) account and authtoken, for the tunnel
 - Two phones: one to call your Vonage number, and one for the app to dial
 - A [Vonage API account](https://developer.vonage.com/sign-up)
@@ -75,7 +75,8 @@ Put the number in `VONAGE_NUMBER` in `.env`.
 | Variable | Value |
 |---|---|
 | `DESTINATION_NUMBER` | The phone the app dials, in E.164 format without the `+` (for example `14155550100`) |
-| `PALABRA_API_KEY` | Your Palabra API key |
+| `PALABRA_CLIENT_ID` | The Client ID of your Palabra API key |
+| `PALABRA_CLIENT_SECRET` | The Client Secret of your Palabra API key |
 | `CALLER_LANGUAGE` | The language the caller speaks. Default `es` |
 | `DESTINATION_LANGUAGE` | The language the destination speaks. Default `en` |
 | `ORIGINAL_VOICE_GAIN` | Volume of the original voice under the translation, from `0` to `1`. Default `0.15` |

@@ -6,7 +6,7 @@ import { Chunker, FRAME_BYTES, mixFrames } from './audio.js';
 import { PalabraStream } from './palabra.js';
 
 const required = ['VONAGE_APPLICATION_ID', 'VONAGE_PRIVATE_KEY_PATH', 'VONAGE_NUMBER',
-  'DESTINATION_NUMBER', 'PALABRA_API_KEY'];
+  'DESTINATION_NUMBER', 'PALABRA_CLIENT_ID', 'PALABRA_CLIENT_SECRET'];
 const missing = required.filter((name) => !process.env[name]);
 if (missing.length > 0) {
   console.error(`Missing environment variables: ${missing.join(', ')}. See .env.example.`);
@@ -15,7 +15,8 @@ if (missing.length > 0) {
 
 const {
   VONAGE_APPLICATION_ID, VONAGE_PRIVATE_KEY_PATH, VONAGE_NUMBER, DESTINATION_NUMBER,
-  PALABRA_API_KEY, CALLER_LANGUAGE = 'es', DESTINATION_LANGUAGE = 'en', PORT = 3000,
+  PALABRA_CLIENT_ID, PALABRA_CLIENT_SECRET, CALLER_LANGUAGE = 'es', DESTINATION_LANGUAGE = 'en',
+  PORT = 3000,
 } = process.env;
 const ORIGINAL_VOICE_GAIN = Number(process.env.ORIGINAL_VOICE_GAIN ?? 0.15);
 
@@ -146,7 +147,8 @@ wss.on('connection', (socket, req) => {
 // One Palabra stream per direction. Each listener only hears the other person's translation.
 async function startTranslation(call) {
   const streamFor = (speaker, listener, label) => new PalabraStream({
-    apiKey: PALABRA_API_KEY,
+    clientId: PALABRA_CLIENT_ID,
+    clientSecret: PALABRA_CLIENT_SECRET,
     sourceLanguage: speaker.language,
     targetLanguage: listener.language,
     label,
