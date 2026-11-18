@@ -174,7 +174,13 @@ async function startTranslation(call) {
     sourceLanguage: speaker.language,
     targetLanguage: listener.language,
     label,
-    onAudio: (audio) => {
+    onAudio: (audio, transcriptionId) => {
+      // When a new sentence starts arriving, log how much earlier speech is still ahead of it.
+      if (transcriptionId !== listener.lastTranscriptionId) {
+        listener.lastTranscriptionId = transcriptionId;
+        const queuedSeconds = (listener.translatedFrames.length * 0.02).toFixed(1);
+        console.log(`[${label}] ${queuedSeconds} s of earlier translation still waiting to play`);
+      }
       listener.translatedFrames.push(...listener.translatedChunker.push(audio));
       const excess = listener.translatedFrames.length - MAX_QUEUED_FRAMES;
       if (excess > 0) listener.translatedFrames.splice(0, excess);

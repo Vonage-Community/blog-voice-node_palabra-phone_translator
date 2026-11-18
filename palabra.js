@@ -16,6 +16,7 @@ export class PalabraStream {
     this.onAudio = onAudio;
     this.label = label;
     this.chunker = new Chunker(PALABRA_CHUNK_BYTES);
+    this.delays = new Map(); // transcription ID -> timings, for the delay log
     this.ready = false;
   }
 
@@ -57,9 +58,17 @@ export class PalabraStream {
             }
             break;
           case 'output_audio_data':
-            this.onAudio(Buffer.from(data.data, 'base64'));
+            this.trackDelay(data.transcription_id, { firstAudioAt: Date.now() });
+            this.onAudio(Buffer.from(data.data, 'base64'), data.transcription_id);
             break;
-          case 'validated_transcription':
+          case 'validated_transcription': {
+            const { language, text, segments, transcription_id: id } = data.transcription;
+            console.log(`[${this.label}] ${language}: ${text}`);
+            // end_timestamp is when the speaker stopped, in seconds since the epoch.
+            const endedAt = segments?.at(-1)?.end_timestamp;
+            if (endedAt) this.trackDelay(id, { speechEndedAt: endedAt * 1000 });
+            break;
+          }
           case 'translated_transcription': {
             const { language, text } = data.transcription;
             console.log(`[${this.label}] ${language}: ${text}`);
@@ -88,6 +97,23 @@ export class PalabraStream {
         this.ready = false;
       });
     });
+  }
+
+  // Logs how long each sentence took: from the speaker going quiet to the first translated audio.
+  // With Delta2, audio can start before the sentence ends, so the delay can be negative.
+  trackDelay(id, { firstAudioAt, speechEndedAt }) {
+    if (!id) return;
+    const entry = this.delays.get(id) ?? {};
+    if (entry.logged) return;
+    // Keep the first value of each, so only the first audio chunk of a sentence counts.
+    entry.firstAudioAt ??= firstAudioAt;
+    entry.speechEndedAt ??= speechEndedAt;
+    this.delays.set(id, entry);
+    if (entry.firstAudioAt && entry.speechEndedAt) {
+      const seconds = ((entry.firstAudioAt - entry.speechEndedAt) / 1000).toFixed(1);
+      console.log(`[${this.label}] delay: ${seconds} s from end of speech to translated audio`);
+      entry.logged = true;
+    }
   }
 
   taskSettings() {
