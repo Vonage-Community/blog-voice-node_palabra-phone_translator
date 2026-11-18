@@ -103,7 +103,9 @@ export class PalabraStream {
         pipeline: {
           transcription: {
             source_language: this.sourceLanguage,
-            segment_confirmation_silence_threshold: 0.7,
+            // Seconds of silence that end a sentence. Below about 0.9, short pauses on a phone call
+            // split sentences in half and each half gets translated on its own.
+            segment_confirmation_silence_threshold: 0.9,
             sentence_splitter: { enabled: true },
           },
           translations: [{ target_language: this.targetLanguage, speech_generation: {} }],
