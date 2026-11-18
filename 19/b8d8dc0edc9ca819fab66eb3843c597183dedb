@@ -1,0 +1,19 @@
+server.js
+  s_cb9cba7a9de31d::t_bb2acd4b7f789e 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "19b8d8dc0edc9ca819fab66eb3843c597183dedb",
+  "prompts": {},
+  "sessions": {
+    "s_cb9cba7a9de31d": {
+      "agent_id": {
+        "tool": "kiro",
+        "id": "sess_c7201f5a-852b-40a3-a9a0-fd8128f3184a",
+        "model": "auto"
+      },
+      "human_author": "Benjamin Aronov <benjamin@benyas.com>"
+    }
+  }
+}
