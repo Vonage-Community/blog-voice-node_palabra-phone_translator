@@ -130,7 +130,6 @@ The terminal running `npm start` logs what Palabra heard and what it translated,
 Quit the tunnel with `q` and stop the server. To remove what you created:
 
 ```bash
-vonage apps numbers unlink YOUR_APP_ID YOUR_NUMBER
 vonage numbers cancel US YOUR_NUMBER
 vonage apps delete YOUR_APP_ID
 ```

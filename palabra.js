@@ -101,14 +101,27 @@ export class PalabraStream {
         // Palabra's output is always 24 kHz mono, which matches the Vonage WebSocket.
         output_stream: { content_type: 'audio', target: { type: 'ws', format: 'pcm_s16le' } },
         pipeline: {
-          transcription: {
-            source_language: this.sourceLanguage,
-            // Seconds of silence that end a sentence. Below about 0.9, short pauses on a phone call
-            // split sentences in half and each half gets translated on its own.
-            segment_confirmation_silence_threshold: 0.9,
-            sentence_splitter: { enabled: true },
+          // Delta2 is Palabra's simultaneous model: it translates while the person is still
+          // talking instead of waiting for the end of each sentence. It accepts fewer source
+          // languages (no Hebrew, for example), and Palabra rejects the task if yours isn't one.
+          transcription: { source_language: this.sourceLanguage },
+          translations: [{
+            target_language: this.targetLanguage,
+            translation_model: 'delta2',
+            speech_generation: {},
+          }],
+          // By default Palabra keeps about 5 s of translated speech buffered, which smooths
+          // playback but adds delay. 2 s is the smallest buffer it allows. Auto tempo speeds the
+          // voice up a little when speech backs up, so the call catches up instead of drifting.
+          translation_queue_configs: {
+            global: {
+              desired_queue_level_ms: 2_000,
+              max_queue_level_ms: 6_000,
+              auto_tempo: true,
+              min_tempo: 1.0,
+              max_tempo: 1.35,
+            },
           },
-          translations: [{ target_language: this.targetLanguage, speech_generation: {} }],
           // Transcripts are only logged. They show what Palabra heard when a translation is off.
           allowed_message_types: ['validated_transcription', 'translated_transcription'],
         },

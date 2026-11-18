@@ -70,6 +70,7 @@ const GREETINGS = {
   es: { text: 'Por favor, espere mientras conectamos su llamada.', language: 'es-ES' },
   he: { text: 'אנא המתינו, אנו מחברים את השיחה.', language: 'he-IL' },
   it: { text: 'Attenda, per favore. Stiamo collegando la sua chiamata.', language: 'it-IT' },
+  nl: { text: 'Even geduld, we verbinden uw oproep.', language: 'nl-BE' },
 };
 const greeting = GREETINGS[CALLER_LANGUAGE] ?? GREETINGS.en;
 
