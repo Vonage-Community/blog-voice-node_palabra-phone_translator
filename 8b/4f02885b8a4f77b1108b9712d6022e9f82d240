@@ -1,0 +1,24 @@
+palabra.js
+  s_cb9cba7a9de31d::t_b44389ee384407 61-62,64-71
+  s_cb9cba7a9de31d::t_a60144a6d33bd4 104-115
+  s_cb9cba7a9de31d::t_3b248fc2e5c8c4 102-103
+  s_cb9cba7a9de31d::t_c738fa464331ba 116-118
+server.js
+  s_cb9cba7a9de31d::t_ad8ce30530b75d 177-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8b4f02885b8a4f77b1108b9712d6022e9f82d240",
+  "prompts": {},
+  "sessions": {
+    "s_cb9cba7a9de31d": {
+      "agent_id": {
+        "tool": "kiro",
+        "id": "sess_c7201f5a-852b-40a3-a9a0-fd8128f3184a",
+        "model": "auto"
+      },
+      "human_author": "Benjamin Aronov <benjamin@benyas.com>"
+    }
+  }
+}
