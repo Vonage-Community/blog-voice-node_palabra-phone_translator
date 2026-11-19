@@ -1,0 +1,21 @@
+README.md
+  s_cb9cba7a9de31d::t_9d471fc4038d65 126-134,136-137
+  s_cb9cba7a9de31d::t_e8561bfd9b47dd 24
+  s_cb9cba7a9de31d::t_70c6f17dbbb4ef 135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6536470562cd74cdc0ca8770e2953ef0975688ee",
+  "prompts": {},
+  "sessions": {
+    "s_cb9cba7a9de31d": {
+      "agent_id": {
+        "tool": "kiro",
+        "id": "sess_c7201f5a-852b-40a3-a9a0-fd8128f3184a",
+        "model": "auto"
+      },
+      "human_author": "Benjamin Aronov <benjamin@benyas.com>"
+    }
+  }
+}
