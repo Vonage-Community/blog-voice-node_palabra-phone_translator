@@ -1,0 +1,19 @@
+README.md
+  s_cb9cba7a9de31d::t_8d3faf22e04416 87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b506776c15ff617294997f4157084e8eafeaa10f",
+  "prompts": {},
+  "sessions": {
+    "s_cb9cba7a9de31d": {
+      "agent_id": {
+        "tool": "kiro",
+        "id": "sess_c7201f5a-852b-40a3-a9a0-fd8128f3184a",
+        "model": "auto"
+      },
+      "human_author": "Benjamin Aronov <benjamin@benyas.com>"
+    }
+  }
+}
