@@ -117,8 +117,8 @@ Use two different phones. If the first phone is also `DESTINATION_NUMBER`, the a
 The terminal running `npm start` logs what Palabra heard and what it translated, which helps when a translation comes out wrong. It also logs the delay for each sentence:
 
 ```text
-[caller] es: ¿Quieres ir al parque?
-[caller] en: Do you want to go to the park?
+[caller] es: Tu quiere ir al parque? Caminar?
+[caller] en:  Do you want to go to the park? Go for a walk?
 [caller] delay: 0.2 s from end of speech to translated audio
 [caller] 0.0 s of earlier translation still waiting to play
 ```
