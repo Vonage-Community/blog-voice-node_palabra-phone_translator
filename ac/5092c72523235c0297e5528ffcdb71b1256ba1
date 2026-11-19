@@ -1,0 +1,18 @@
+README.md
+  h_d5be481ddf6211 33-34
+package-lock.json
+  h_d5be481ddf6211 2,8
+package.json
+  h_d5be481ddf6211 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ac5092c72523235c0297e5528ffcdb71b1256ba1",
+  "prompts": {},
+  "humans": {
+    "h_d5be481ddf6211": {
+      "author": "Benjamin Aronov <benjamin@benyas.com>"
+    }
+  }
+}
