@@ -84,7 +84,7 @@ Put the number in `VONAGE_NUMBER` in `.env`.
 | `ORIGINAL_VOICE_GAIN` | Volume of the other person's real voice when no translation is playing, from `0` to `1`. Default `0` (off) |
 | `NGROK_AUTHTOKEN` | Your ngrok authtoken. `vonage tunnel ngrok` reads it from `.env` in the folder you run the command from |
 
-The app uses Palabra's simultaneous translation model, Delta2, which accepts these source languages: `ar`, `de`, `en`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `nl`, `pt`, `ru`, and `zh`. The caller hears a greeting in their language for `de`, `en`, `es`, `he`, `it`, and `nl`, and in English for anything else. To add one, add a line to `GREETINGS` in `server.js`.
+The app uses Palabra's simultaneous translation model, Delta2, which accepts these source languages: `ar`, `de`, `en`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `nl`, `pt`, `ru`, and `zh`. Each person's language is the source for one direction, so both `CALLER_LANGUAGE` and `DESTINATION_LANGUAGE` must be on that list. The caller hears a greeting in their language for `de`, `en`, `es`, `it`, and `nl`, and in English for anything else. To add one, add a line to `GREETINGS` in `server.js`. (`GREETINGS` also has Hebrew, from testing before the switch to Delta2. Hebrew isn't a Delta2 source language, so it doesn't work with the current settings.)
 
 ## Run
 
