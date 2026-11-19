@@ -9,9 +9,9 @@ Caller hears Spanish ◄── Palabra: en → es ◄──  server.js  ◄─�
 
 How it works:
 
-1. The [Voice API](https://developer.vonage.com/en/voice/voice-api/overview) calls the `/webhooks/answer` webhook. The app answers with an NCCO that streams the caller's audio to the server over a [WebSocket](https://developer.vonage.com/en/voice/voice-api/concepts/websockets), and it places an outbound call to the second person.
-2. When the second person answers, their audio streams over a second WebSocket.
-3. The server opens one [Palabra AI](https://palabra.ai) translation stream per direction. Each person hears the other's translated speech, with a quiet copy of the original voice underneath so the conversation keeps its timing.
+1. The [Voice API](https://developer.vonage.com/en/voice/voice-api/overview) calls the `/webhooks/answer` webhook. The app answers with an NCCO that greets the caller in their own language and streams their audio to the server over a [WebSocket](https://developer.vonage.com/en/voice/voice-api/concepts/websockets). It also places an outbound call to the second person, and plays a ringing tone to the caller while that phone rings.
+2. When the second person answers, their audio streams over a second WebSocket. If voicemail answers instead, Vonage hangs up.
+3. The server opens one [Palabra AI](https://palabra.ai) translation stream per direction. Each person hears only the other's translated speech.
 4. When either person hangs up, the app ends the other leg and closes both translation streams.
 
 Read the blog post: _coming soon_
@@ -52,7 +52,7 @@ vonage apps create "Phone Translator" --private-key-file=./private.key
 
 This saves the private key as `private.key` in the project folder, which is where `.env` expects it. Copy the application ID from the output into `VONAGE_APPLICATION_ID` in `.env`.
 
-Turn on Voice for the application. The `example.com` domain is a placeholder that the tunnel replaces in step 6:
+Turn on Voice for the application. The `example.com` domain is a placeholder that the tunnel replaces later:
 
 ```bash
 vonage apps capabilities update YOUR_APP_ID voice --voice-answer-url=https://example.com/webhooks/answer --voice-answer-http=GET --voice-event-url=https://example.com/webhooks/event --voice-event-http=POST
@@ -79,10 +79,10 @@ Put the number in `VONAGE_NUMBER` in `.env`.
 | `PALABRA_CLIENT_SECRET` | The Client Secret of your Palabra API key |
 | `CALLER_LANGUAGE` | The language the caller speaks. Default `es` |
 | `DESTINATION_LANGUAGE` | The language the destination speaks. Default `en` |
-| `ORIGINAL_VOICE_GAIN` | Volume of the original voice under the translation, from `0` to `1`. Default `0.15` |
+| `ORIGINAL_VOICE_GAIN` | Volume of the other person's real voice when no translation is playing, from `0` to `1`. Default `0` (off) |
 | `NGROK_AUTHTOKEN` | Your ngrok authtoken, used by the tunnel command |
 
-See Palabra's [supported languages](https://docs.palabra.ai/docs/languages) for other language codes.
+The app uses Palabra's simultaneous translation model, Delta2, which accepts these source languages: `ar`, `de`, `en`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `nl`, `pt`, `ru`, and `zh`. The caller hears a greeting in their language for `de`, `en`, `es`, `he`, `it`, and `nl`, and in English for anything else. To add one, add a line to `GREETINGS` in `server.js`.
 
 ## Run
 
@@ -104,24 +104,35 @@ When you're done, press `q` to quit. That restores the `example.com` webhooks. C
 
 ## Test
 
-1. From the first phone, call your Vonage number. You hear "Please wait while we connect your call."
+1. From the first phone, call your Vonage number. You hear "Por favor, espere mientras conectamos su llamada.", then a ringing tone.
 2. The second phone rings. Answer it.
-3. Speak Spanish on the first phone. The second phone hears English a moment later, with the Spanish speaker's own voice quietly underneath.
+3. Speak Spanish on the first phone. The second phone hears English, usually within a second or two of the speaker finishing.
 4. Speak English on the second phone. The first phone hears Spanish.
 5. Hang up either phone. The other call ends too.
 
-The terminal running `npm start` logs what Palabra heard and what it translated, which helps when a translation comes out wrong.
+Use two different phones. If the first phone is also `DESTINATION_NUMBER`, the app dials a phone that's already on the call.
+
+The terminal running `npm start` logs what Palabra heard and what it translated, which helps when a translation comes out wrong. It also logs the delay for each sentence:
+
+```text
+[caller] es: ¿Quieres ir al parque?
+[caller] en: Do you want to go to the park?
+[caller] delay: 0.2 s from end of speech to translated audio
+[caller] 0.0 s of earlier translation still waiting to play
+```
 
 ## How the audio works
 
 - Both Vonage WebSockets use `audio/l16;rate=24000`: 16-bit mono PCM at 24 kHz. Palabra's output is always 24 kHz mono, so the input uses 24 kHz too and nothing needs resampling. If the rates don't match, voices play back too fast, too slow, or at the wrong pitch.
 - Vonage sends and expects 20 ms frames (960 bytes at 24 kHz). `audio.js` cuts Palabra's translated audio into frames of that size.
-- Each person's incoming frames also set the timing for what the other person hears. Every 20 ms, the app sends the next frame of translated speech, or a quiet copy of the speaker's voice when no translation is playing.
+- Each person's incoming frames also set the timing for what the other person hears. Every 20 ms, the app sends the next frame of translated speech. When nothing is waiting, it sends the speaker's real voice at `ORIGINAL_VOICE_GAIN`, which is silence by default. Until the second phone answers, the caller's frames set the timing for the ringing tone instead.
 - The app sends audio to Palabra in 320 ms chunks, the size Palabra recommends.
+- Palabra keeps about 5 seconds of translated speech buffered by default. The app asks for 2 seconds, the smallest allowed, with auto tempo on, so the voice speeds up slightly when speech backs up.
 
 ## Limitations
 
-- **Translation takes a moment.** Each phrase is translated after the speaker pauses, so expect a short delay. On calls where a mistake matters, such as medical or legal calls, a professional interpreter is still the right choice.
+- **Conversations are slower than a normal call.** Palabra usually starts the translated audio within a second or two of the speaker finishing, but each person then hears the whole sentence again in the other language. Every exchange takes roughly twice as long, and it can be hard to tell when the other person has finished. On calls where a mistake matters, such as medical or legal calls, a professional interpreter is still the right choice.
+- **Each person needs to speak their configured language.** If someone switches to the other language, Palabra mishears it or passes it through untranslated.
 - **The webhooks aren't authenticated.** Anyone who finds your tunnel URL could make the app dial `DESTINATION_NUMBER`. Quit the tunnel when you're not testing, and add [signed webhooks](https://developer.vonage.com/en/getting-started/concepts/webhooks#validating-signed-webhooks) before using this outside a demo.
 - **Both legs are billed.** Vonage charges for the inbound and outbound call, and Palabra charges for two translation streams for as long as the call lasts.
 

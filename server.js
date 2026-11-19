@@ -18,7 +18,7 @@ const {
   PALABRA_CLIENT_ID, PALABRA_CLIENT_SECRET, CALLER_LANGUAGE = 'es', DESTINATION_LANGUAGE = 'en',
   PORT = 3000,
 } = process.env;
-const ORIGINAL_VOICE_GAIN = Number(process.env.ORIGINAL_VOICE_GAIN ?? 0.15);
+const ORIGINAL_VOICE_GAIN = Number(process.env.ORIGINAL_VOICE_GAIN ?? 0);
 
 // Keeps at most 30 seconds of translated audio waiting per listener, in case playback falls behind.
 const MAX_QUEUED_FRAMES = 1_500;
@@ -100,6 +100,8 @@ app.get('/webhooks/answer', async (req, res) => {
       answer_url: [`${baseUrl(req)}/webhooks/answer/destination/${callId}`],
       answer_method: 'GET',
       event_url: [`${baseUrl(req)}/webhooks/event`],
+      // If voicemail picks up, Vonage hangs up instead of connecting the caller to a recording.
+      machine_detection: 'hangup',
     });
     call.destination.uuid = uuid;
     callIdByLeg.set(uuid, callId);
