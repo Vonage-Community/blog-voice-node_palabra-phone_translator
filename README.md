@@ -21,7 +21,7 @@ Read the blog post: _coming soon_
 - [Node.js](https://nodejs.org) 22 or newer
 - [Vonage CLI](https://github.com/Vonage/vonage-cli) 3.3.1 or newer: `npm install -g @vonage/cli`
 - A [Palabra AI](https://app.palabra.ai) account and an API key. Creating a key gives you a Client ID and a Client Secret.
-- An [ngrok](https://ngrok.com) account and authtoken, for the tunnel
+- An [ngrok](https://ngrok.com) account and authtoken, for the tunnel. You don't need to install ngrok, because the Vonage CLI includes it.
 - Two phones: one to call your Vonage number, and one for the app to dial
 - A [Vonage API account](https://developer.vonage.com/sign-up)
 
@@ -82,7 +82,7 @@ Put the number in `VONAGE_NUMBER` in `.env`.
 | `CALLER_LANGUAGE` | The language the caller speaks. Default `es` |
 | `DESTINATION_LANGUAGE` | The language the destination speaks. Default `en` |
 | `ORIGINAL_VOICE_GAIN` | Volume of the other person's real voice when no translation is playing, from `0` to `1`. Default `0` (off) |
-| `NGROK_AUTHTOKEN` | Your ngrok authtoken, used by the tunnel command |
+| `NGROK_AUTHTOKEN` | Your ngrok authtoken. `vonage tunnel ngrok` reads it from `.env` in the folder you run the command from |
 
 The app uses Palabra's simultaneous translation model, Delta2, which accepts these source languages: `ar`, `de`, `en`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `nl`, `pt`, `ru`, and `zh`. The caller hears a greeting in their language for `de`, `en`, `es`, `he`, `it`, and `nl`, and in English for anything else. To add one, add a line to `GREETINGS` in `server.js`.
 
@@ -122,6 +122,18 @@ The terminal running `npm start` logs what Palabra heard and what it translated,
 [caller] delay: 0.2 s from end of speech to translated audio
 [caller] 0.0 s of earlier translation still waiting to play
 ```
+
+## Troubleshooting
+
+| What you see | What it means |
+|---|---|
+| `Error: (node:...) [DEP0187] DeprecationWarning` after a `vonage` command | A warning from Node.js, not an error. At the time of writing, every CLI 3.3.1 command prints it on Node 24. The command still succeeded |
+| `Could not call the destination number: secretOrPrivateKey must be an asymmetric key` | `private.key` is missing, or doesn't belong to `VONAGE_APPLICATION_ID`. Check that `VONAGE_PRIVATE_KEY_PATH` points at the key `vonage apps create` saved |
+| `Could not call the destination number: Request failed with status code 401` | The application ID and private key don't match |
+| `Palabra error: VALIDATION_ERROR` when a call starts | Palabra doesn't accept one of your language codes with the Delta2 model. See the list in step 5 |
+| `Could not start translation: Unexpected server response: 401` | The Palabra Client ID or Client Secret is wrong |
+| The call doesn't go through, or drops right after it connects | Vonage can't reach the app, usually because the tunnel isn't running. Start `vonage tunnel ngrok` from the project folder and call again |
+| The second phone goes to voicemail and the call ends | That's machine detection hanging up on voicemail. Answer the second phone before voicemail picks up |
 
 ## How the audio works
 
