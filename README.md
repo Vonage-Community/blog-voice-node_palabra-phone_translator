@@ -41,8 +41,10 @@ cp .env.example .env
 Find your API key and secret on the [Vonage dashboard](https://dashboard.vonage.com). This is the one step the CLI can't do for you. Then run:
 
 ```bash
-vonage auth set --api-key=YOUR_API_KEY --api-secret=YOUR_API_SECRET
+vonage auth set --api-key='YOUR_API_KEY' --api-secret='YOUR_API_SECRET'
 ```
+
+Keep the single quotes. Without them, zsh (the default shell on macOS) reads characters like `*`, `?`, or `(` in a secret as shell syntax and fails with `no matches found` or `parse error`.
 
 ### 3. Create a Vonage application
 
