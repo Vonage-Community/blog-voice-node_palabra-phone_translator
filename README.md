@@ -30,8 +30,8 @@ Read the blog post: _coming soon_
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/Vonage-Community/vonage-palabra-phone-translator.git
-cd vonage-palabra-phone-translator
+git clone https://github.com/Vonage-Community/blog-voice-node_palabra-phone_translator.git
+cd blog-voice-node_palabra-phone_translator
 npm install
 cp .env.example .env
 ```

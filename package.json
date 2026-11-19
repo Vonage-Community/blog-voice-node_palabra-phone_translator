@@ -1,5 +1,5 @@
 {
-  "name": "vonage-palabra-phone-translator",
+  "name": "blog-voice-node_palabra-phone_translator",
   "version": "1.0.0",
   "description": "Real-time speech-to-speech translation on a phone call with the Vonage Voice API and Palabra AI",
   "type": "module",
