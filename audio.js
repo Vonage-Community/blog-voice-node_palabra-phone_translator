@@ -31,7 +31,7 @@ export class Chunker {
   }
 }
 
-// Mixes the original voice into the translated frame at a lower volume.
+// Mixes the original voice into the translated frame at the given volume.
 // Either input may be missing; the result is always one full frame.
 export function mixFrames(translated, original, originalGain) {
   const out = Buffer.alloc(FRAME_BYTES);

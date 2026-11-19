@@ -153,8 +153,8 @@ wss.on('connection', (socket, req) => {
       }
 
       // This leg's audio arrives every 20 ms, so it also sets the pace for the other leg:
-      // the next frame of translated speech, with this speaker's own voice quietly underneath.
-      // While translated speech plays, the original voice drops out so the translation stays clear.
+      // the next frame of translated speech, or this speaker's own voice at ORIGINAL_VOICE_GAIN
+      // (off by default) when no translation is waiting.
       const translated = otherLeg.translatedFrames.shift();
       const gain = translated ? 0 : ORIGINAL_VOICE_GAIN;
       if (otherLeg.socket?.readyState === WebSocket.OPEN) {
